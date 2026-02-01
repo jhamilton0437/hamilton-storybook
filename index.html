@@ -333,9 +333,13 @@
         <h1>📚 Hamilton Story Time ✨</h1>
         <p class="subtitle">Magical illustrated stories for our family!</p>
 
-        <div class="api-section">
-            <small>🔑 OpenAI API Key (ask Dad!):</small>
+        <div class="api-section" id="apiSection" style="display: none;">
+            <small>🔑 OpenAI API Key:</small>
             <input type="password" id="apiKey" placeholder="sk-...">
+            <button onclick="saveAndHideKey()" style="margin-top:8px;padding:8px 16px;border:none;border-radius:8px;background:white;cursor:pointer;">Save</button>
+        </div>
+        <div style="text-align:right;margin-bottom:10px;">
+            <button onclick="toggleApiSection()" style="background:none;border:none;color:white;opacity:0.5;cursor:pointer;font-size:0.9em;">⚙️ Settings</button>
         </div>
 
         <div class="section">
@@ -775,8 +779,27 @@ IMPORTANT for imagePrompt:
         // Load saved API key
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('storyApiKey');
-            if (savedKey) document.getElementById('apiKey').value = savedKey;
+            if (savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+            } else {
+                // No key saved, show the input
+                document.getElementById('apiSection').style.display = 'block';
+            }
         });
+        
+        function toggleApiSection() {
+            const section = document.getElementById('apiSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function saveAndHideKey() {
+            const key = document.getElementById('apiKey').value;
+            if (key) {
+                localStorage.setItem('storyApiKey', key);
+                document.getElementById('apiSection').style.display = 'none';
+            }
+        }
+        
         document.getElementById('apiKey').addEventListener('change', e => {
             localStorage.setItem('storyApiKey', e.target.value);
         });
