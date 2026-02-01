@@ -340,6 +340,7 @@
 
         <div class="section">
             <h2>👧 Who's the Hero?</h2>
+            <p style="opacity: 0.8; margin-bottom: 12px; font-size: 0.9em;">Hamilton Sisters</p>
             <div class="heroes">
                 <div class="hero selected" onclick="toggleHero(this)" data-hero="Evelyn">
                     <div class="emoji">🌟</div>
@@ -362,6 +363,19 @@
                     <div class="age">Age 5</div>
                 </div>
             </div>
+            <p style="opacity: 0.8; margin: 16px 0 12px; font-size: 0.9em;">Wright Sisters</p>
+            <div class="heroes">
+                <div class="hero" onclick="toggleHero(this)" data-hero="Livi">
+                    <div class="emoji">🦋</div>
+                    <div class="name">Livi</div>
+                    <div class="age">Age 11</div>
+                </div>
+                <div class="hero" onclick="toggleHero(this)" data-hero="Sutton">
+                    <div class="emoji">🌷</div>
+                    <div class="name">Sutton</div>
+                    <div class="age">Age 9</div>
+                </div>
+            </div>
             <p class="tip">Tap to select one or more heroes!</p>
         </div>
 
@@ -376,6 +390,14 @@
                 <div class="option" onclick="selectOption(this, 'theme')">🦸‍♀️ Superheroes</div>
                 <div class="option" onclick="selectOption(this, 'theme')">⚽ Soccer</div>
                 <div class="option" onclick="selectOption(this, 'theme')">🪄 Magic</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🦕 Dinosaurs</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🧚 Fairies</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🏴‍☠️ Pirates</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🐾 Paw Patrol</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🎪 Circus</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🕵️ Mystery</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🏕️ Camping</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🎄 Christmas</div>
             </div>
         </div>
 
@@ -383,11 +405,19 @@
             <h2>🗺️ Where Does It Happen?</h2>
             <div class="options">
                 <div class="option selected" onclick="selectOption(this, 'place')">🏰 Castle</div>
-                <div class="option" onclick="selectOption(this, 'place')">🌲 Forest</div>
-                <div class="option" onclick="selectOption(this, 'place')">🌊 Ocean</div>
-                <div class="option" onclick="selectOption(this, 'place')">☁️ Clouds</div>
-                <div class="option" onclick="selectOption(this, 'place')">🏠 Home</div>
-                <div class="option" onclick="selectOption(this, 'place')">🌌 Space</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌲 Enchanted Forest</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌊 Underwater Kingdom</div>
+                <div class="option" onclick="selectOption(this, 'place')">☁️ Cloud Kingdom</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏠 Our House</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌌 Outer Space</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏝️ Tropical Island</div>
+                <div class="option" onclick="selectOption(this, 'place')">🎢 Amusement Park</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏔️ Mountain Top</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌋 Volcano Land</div>
+                <div class="option" onclick="selectOption(this, 'place')">🍭 Candy World</div>
+                <div class="option" onclick="selectOption(this, 'place')">🦖 Dinosaur Valley</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏜️ Desert Oasis</div>
+                <div class="option" onclick="selectOption(this, 'place')">❄️ Ice Kingdom</div>
             </div>
         </div>
 
@@ -560,7 +590,9 @@
                 'Evelyn': '11-year-old girl with brown hair',
                 'Lucy': '11-year-old girl with brown hair', 
                 'Goldie': '5-year-old girl with blonde curly hair',
-                'Rosemary': '5-year-old girl with reddish-brown hair'
+                'Rosemary': '5-year-old girl with reddish-brown hair',
+                'Livi': '11-year-old girl with light brown hair',
+                'Sutton': '9-year-old girl with blonde hair'
             };
             
             const heroDescriptions = selections.heroes.map(h => `${h} (${heroAges[h]})`).join(', ');
