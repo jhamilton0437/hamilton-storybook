@@ -376,6 +376,19 @@
                     <div class="age">Age 9</div>
                 </div>
             </div>
+            <p style="opacity: 0.8; margin: 16px 0 12px; font-size: 0.9em;">Friends</p>
+            <div class="heroes">
+                <div class="hero" onclick="toggleHero(this)" data-hero="Abby">
+                    <div class="emoji">🌈</div>
+                    <div class="name">Abby</div>
+                    <div class="age">Age 8</div>
+                </div>
+                <div class="hero" onclick="toggleHero(this)" data-hero="Tennyson">
+                    <div class="emoji">⭐</div>
+                    <div class="name">Tennyson</div>
+                    <div class="age">Age 5</div>
+                </div>
+            </div>
             <p class="tip">Tap to select one or more heroes!</p>
         </div>
 
@@ -592,7 +605,9 @@
                 'Goldie': '5-year-old girl with blonde curly hair',
                 'Rosemary': '5-year-old girl with reddish-brown hair',
                 'Livi': '11-year-old girl with light brown hair',
-                'Sutton': '9-year-old girl with blonde hair'
+                'Sutton': '9-year-old girl with blonde hair',
+                'Abby': '8-year-old girl',
+                'Tennyson': '5-year-old girl'
             };
             
             const heroDescriptions = selections.heroes.map(h => `${h} (${heroAges[h]})`).join(', ');
