@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hamilton Story Time 📚</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            margin: 0;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .section {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .section h2 {
+            margin-top: 0;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .option {
+            background: rgba(255,255,255,0.2);
+            border: 3px solid transparent;
+            border-radius: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1em;
+            min-width: 100px;
+            text-align: center;
+        }
+        .option:hover, .option:active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.02);
+        }
+        .option.selected {
+            background: rgba(255,255,255,0.9);
+            color: #764ba2;
+            border-color: white;
+            transform: scale(1.05);
+        }
+        .heroes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        @media (min-width: 500px) {
+            .heroes {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .hero {
+            background: rgba(255,255,255,0.2);
+            border: 3px solid transparent;
+            border-radius: 16px;
+            padding: 20px 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .hero:hover, .hero:active {
+            background: rgba(255,255,255,0.3);
+        }
+        .hero.selected {
+            background: rgba(255,255,255,0.9);
+            color: #764ba2;
+            border-color: gold;
+            box-shadow: 0 0 20px rgba(255,215,0,0.6);
+            transform: scale(1.05);
+        }
+        .hero .emoji {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .hero .name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .hero .checkmark {
+            display: none;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: gold;
+            color: #764ba2;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            line-height: 32px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .hero.selected .checkmark {
+            display: block;
+        }
+        .hero-wrapper {
+            position: relative;
+        }
+        
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            border: 3px solid transparent;
+            border-radius: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #764ba2;
+            border-color: white;
+        }
+        #sillyOn.active {
+            background: linear-gradient(135deg, #ffeb3b 0%, #ff9800 100%);
+            color: #333;
+            animation: wiggle 0.5s ease infinite;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        .silly-section {
+            transition: all 0.3s;
+        }
+        
+        button.generate {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        button.generate:hover, button.generate:active {
+            transform: scale(1.02);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+        button.generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Story Box (Read All Mode) */
+        .story-box {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 20px;
+            padding: 28px;
+            margin-top: 20px;
+            line-height: 1.8;
+            font-size: 1.2em;
+            display: none;
+        }
+        .story-box.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        .story-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Picture Book Mode */
+        .picture-book {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            z-index: 1000;
+            flex-direction: column;
+        }
+        .picture-book.visible {
+            display: flex;
+        }
+        .book-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .book-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+        }
+        .close-book {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .page {
+            background: linear-gradient(180deg, #fff9e6 0%, #fff 100%);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: pageFlip 0.4s ease;
+        }
+        @keyframes pageFlip {
+            from { 
+                opacity: 0;
+                transform: rotateY(-10deg) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: rotateY(0) scale(1);
+            }
+        }
+        .page-illustration {
+            background: linear-gradient(180deg, #e8f4fd 0%, #fef9e7 100%);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6em;
+            padding: 30px;
+            border-bottom: 3px dashed #ddd;
+            flex-shrink: 0;
+        }
+        .page-text {
+            padding: 25px 30px;
+            font-size: 1.5em;
+            line-height: 1.6;
+            color: #333;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-nav {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 1.3em;
+            padding: 16px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+        .nav-btn:hover, .nav-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .page-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .page-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.2s;
+        }
+        .page-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+        .page-number {
+            color: rgba(255,255,255,0.7);
+            font-size: 1em;
+        }
+        
+        /* iPad Landscape Optimizations */
+        @media (min-width: 768px) and (orientation: landscape) {
+            .container {
+                max-width: 900px;
+            }
+            .heroes {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            .options {
+                justify-content: center;
+            }
+            .page {
+                flex-direction: row;
+                max-height: 70vh;
+            }
+            .page-illustration {
+                width: 45%;
+                min-height: auto;
+                border-bottom: none;
+                border-right: 3px dashed #ddd;
+                font-size: 8em;
+            }
+            .page-text {
+                width: 55%;
+                font-size: 1.6em;
+                padding: 30px 40px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tip {
+            text-align: center;
+            font-size: 0.95em;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        
+        /* Touch feedback */
+        @media (hover: none) {
+            .option:active, .hero:active, button:active, .nav-btn:active {
+                transform: scale(0.97);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainScreen">
+        <h1>✨ Hamilton Story Time ✨</h1>
+        <p class="subtitle">Create a magical bedtime story!</p>
+
+        <div class="section">
+            <h2>🌟 Who Are Today's Heroes?</h2>
+            <p class="tip">Tap to select heroes! (Pick 1 or more)</p>
+            <div class="heroes">
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Evelyn" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🌟</span>
+                        <span class="name">Evelyn</span>
+                    </div>
+                </div>
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Lucy" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🌙</span>
+                        <span class="name">Lucy</span>
+                    </div>
+                </div>
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Goldie" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🌻</span>
+                        <span class="name">Goldie</span>
+                    </div>
+                </div>
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Rosemary" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🌹</span>
+                        <span class="name">Rosemary</span>
+                    </div>
+                </div>
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Livi" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🦋</span>
+                        <span class="name">Livi</span>
+                    </div>
+                </div>
+                <div class="hero-wrapper">
+                    <div class="hero" data-hero="Sutton" onclick="toggleHero(this)">
+                        <span class="checkmark">✓</span>
+                        <span class="emoji">🌷</span>
+                        <span class="name">Sutton</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎭 Pick a Theme</h2>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'theme')">🐉 Dragons</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🚀 Space</div>
+                <div class="option" onclick="selectOption(this, 'theme')">⚽ Soccer</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🧙‍♀️ Magic</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🧜‍♀️ Mermaids</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🦄 Unicorns</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🏰 Princess</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🦸‍♀️ Superheroes</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🦖 Dinosaurs</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🧚 Fairies</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🏴‍☠️ Pirates</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🐕 Puppy Rescue</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🎪 Circus</div>
+                <div class="option" onclick="selectOption(this, 'theme')">🍦 Candy Land</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🗺️ Pick a Place</h2>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'place')">🏰 Castle</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌊 Underwater</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌲 Enchanted Forest</div>
+                <div class="option" onclick="selectOption(this, 'place')">☁️ Cloud Kingdom</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏠 Our House</div>
+                <div class="option" onclick="selectOption(this, 'place')">🎢 Amusement Park</div>
+                <div class="option" onclick="selectOption(this, 'place')">🏝️ Tropical Island</div>
+                <div class="option" onclick="selectOption(this, 'place')">🌌 Another Planet</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📖 How Do You Want to Read?</h2>
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('book')" id="modeBook">📖 Picture Book</button>
+                <button class="mode-btn" onclick="setMode('all')" id="modeAll">📜 Read All</button>
+            </div>
+        </div>
+
+        <div class="section silly-section">
+            <h2>🤪 Silly Mode?</h2>
+            <div class="mode-toggle">
+                <button class="mode-btn" onclick="setSilly(false)" id="sillyOff">😊 Normal</button>
+                <button class="mode-btn" onclick="setSilly(true)" id="sillyOn">🤪 SILLY!</button>
+            </div>
+            <p class="tip" id="sillyTip">Turn on for goofy surprises and funny twists!</p>
+        </div>
+
+        <button class="generate" onclick="generateStory()" id="generateBtn">
+            ✨ Create Our Story! ✨
+        </button>
+
+        <div class="story-box" id="storyBox">
+            <div class="story-title" id="storyTitle"></div>
+            <div id="storyContent"></div>
+        </div>
+    </div>
+
+    <!-- Picture Book Overlay -->
+    <div class="picture-book" id="pictureBook">
+        <div class="book-header">
+            <div style="width:44px"></div>
+            <div class="book-title" id="bookTitle">Story Title</div>
+            <button class="close-book" onclick="closeBook()">✕</button>
+        </div>
+        <div class="page-container">
+            <div class="page">
+                <div class="page-illustration" id="pageIllustration">🐉</div>
+                <div class="page-text" id="pageText">Story text goes here...</div>
+            </div>
+        </div>
+        <div class="page-nav">
+            <button class="nav-btn" onclick="prevPage()" id="prevBtn">← Back</button>
+            <div style="text-align: center;">
+                <div class="page-dots" id="pageDots"></div>
+                <div class="page-number" id="pageNumber">Page 1 of 6</div>
+            </div>
+            <button class="nav-btn" onclick="nextPage()" id="nextBtn">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let selections = {
+            heroes: [],
+            theme: null,
+            place: null,
+            mode: 'book', // 'book' or 'all'
+            silly: false
+        };
+        
+        let currentStory = null;
+        let currentPage = 0;
+        
+        function setSilly(isSilly) {
+            selections.silly = isSilly;
+            document.getElementById('sillyOff').classList.toggle('active', !isSilly);
+            document.getElementById('sillyOn').classList.toggle('active', isSilly);
+            document.getElementById('sillyTip').textContent = isSilly 
+                ? '🎉 Get ready for MAXIMUM silliness!' 
+                : 'Turn on for goofy surprises and funny twists!';
+        }
+
+        function toggleHero(el) {
+            const hero = el.dataset.hero;
+            const index = selections.heroes.indexOf(hero);
+            
+            if (index > -1) {
+                selections.heroes.splice(index, 1);
+                el.classList.remove('selected');
+            } else {
+                selections.heroes.push(hero);
+                el.classList.add('selected');
+            }
+        }
+
+        function selectOption(el, type) {
+            el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            selections[type] = el.textContent.trim();
+        }
+        
+        function setMode(mode) {
+            selections.mode = mode;
+            document.getElementById('modeBook').classList.toggle('active', mode === 'book');
+            document.getElementById('modeAll').classList.toggle('active', mode === 'all');
+        }
+
+        function generateStory() {
+            if (selections.heroes.length === 0 || !selections.theme || !selections.place) {
+                alert('Pick at least one hero, a theme, and a place first! 🌟');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '✨ Creating Magic...';
+
+            setTimeout(() => {
+                currentStory = createStory(selections.heroes, selections.theme, selections.place, selections.silly);
+                
+                if (selections.mode === 'book') {
+                    showPictureBook();
+                } else {
+                    showReadAll();
+                }
+                
+                btn.disabled = false;
+                btn.innerHTML = '✨ Create Another Story! ✨';
+            }, 800);
+        }
+        
+        function showReadAll() {
+            document.getElementById('storyTitle').textContent = currentStory.title;
+            document.getElementById('storyContent').innerHTML = currentStory.pages.map(p => `<p>${p.text}</p>`).join('');
+            document.getElementById('storyBox').classList.add('visible');
+        }
+        
+        function showPictureBook() {
+            currentPage = 0;
+            document.getElementById('bookTitle').textContent = currentStory.title;
+            
+            // Create page dots
+            const dotsContainer = document.getElementById('pageDots');
+            dotsContainer.innerHTML = currentStory.pages.map((_, i) => 
+                `<div class="page-dot ${i === 0 ? 'active' : ''}" onclick="goToPage(${i})"></div>`
+            ).join('');
+            
+            updatePage();
+            document.getElementById('pictureBook').classList.add('visible');
+        }
+        
+        function updatePage() {
+            const page = currentStory.pages[currentPage];
+            document.getElementById('pageIllustration').textContent = page.illustration;
+            document.getElementById('pageText').textContent = page.text;
+            document.getElementById('pageNumber').textContent = `Page ${currentPage + 1} of ${currentStory.pages.length}`;
+            
+            // Update dots
+            document.querySelectorAll('.page-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentPage);
+            });
+            
+            // Update nav buttons
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').textContent = currentPage === currentStory.pages.length - 1 ? '🏠 Done' : 'Next →';
+        }
+        
+        function nextPage() {
+            if (currentPage < currentStory.pages.length - 1) {
+                currentPage++;
+                updatePage();
+                animatePage();
+            } else {
+                closeBook();
+            }
+        }
+        
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePage();
+                animatePage();
+            }
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            updatePage();
+            animatePage();
+        }
+        
+        function animatePage() {
+            const page = document.querySelector('.page');
+            page.style.animation = 'none';
+            page.offsetHeight; // Trigger reflow
+            page.style.animation = 'pageFlip 0.4s ease';
+        }
+        
+        function closeBook() {
+            document.getElementById('pictureBook').classList.remove('visible');
+        }
+        
+        // Touch swipe support
+        let touchStartX = 0;
+        document.getElementById('pictureBook').addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+        document.getElementById('pictureBook').addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextPage();
+                else prevPage();
+            }
+        });
+
+        function createStory(heroes, theme, place, silly = false) {
+            const leader = heroes[0];
+            const supporting = heroes.slice(1);
+            const placeName = place.substring(2);
+            
+            function formatHeroes(list) {
+                if (list.length === 0) return '';
+                if (list.length === 1) return list[0];
+                if (list.length === 2) return `${list[0]} and ${list[1]}`;
+                return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
+            }
+            
+            const heroEmojis = {
+                'Evelyn': '🌟',
+                'Lucy': '🌙', 
+                'Goldie': '🌻',
+                'Rosemary': '🌹',
+                'Livi': '🦋',
+                'Sutton': '🌷'
+            };
+            
+            const placeEmojis = {
+                'Castle': '🏰',
+                'Underwater': '🌊',
+                'Enchanted Forest': '🌲',
+                'Cloud Kingdom': '☁️',
+                'Our House': '🏠',
+                'Amusement Park': '🎢',
+                'Tropical Island': '🏝️',
+                'Another Planet': '🌌'
+            };
+            
+            const heroEmojiStr = heroes.map(h => heroEmojis[h]).join('');
+            const placeEmoji = Object.keys(placeEmojis).find(k => place.includes(k)) ? placeEmojis[Object.keys(placeEmojis).find(k => place.includes(k))] : '✨';
+            
+            // Silly additions
+            const sillyTwists = [
+                'But then something SUPER SILLY happened!',
+                'And then — BOING! — everything got wacky!',
+                'Suddenly, things got RIDICULOUS!',
+                'But WAIT! Something bonkers was about to happen!'
+            ];
+            const sillyTwist = sillyTwists[Math.floor(Math.random() * sillyTwists.length)];
+
+            const stories = {
+                'Dragons': () => silly ? ({
+                    title: `${formatHeroes(heroes)} and the BURPING Dragon! 🤪`,
+                    pages: [
+                        { illustration: heroEmojiStr + ' ' + placeEmoji, text: `Once upon a time, in a ${placeName}, ${formatHeroes(heroes)} heard the LOUDEST noise ever!` },
+                        { illustration: '💨 🐉 😳', text: `BUUUURRRP! It was a dragon! But this dragon couldn't breathe fire — it could only BURP bubbles!` },
+                        { illustration: '🫧 🐉 😂', text: `"Excuse me!" said the dragon, turning bright red. ${leader} couldn't stop giggling!` },
+                        { illustration: '🫧 🫧 🎈 🎉', text: `The dragon burped SO many bubbles that everyone started floating! "WHEEE!" they all shouted!` },
+                        { illustration: '🫧 ' + heroEmojiStr + ' 🐉 🎪', text: `They floated all the way to a cloud party! The dragon became the OFFICIAL bubble-maker!` },
+                        { illustration: '🐉 💨 🫧 ' + heroEmojiStr, text: `Now whenever they want to fly, they just ask the dragon to burp! BUUUURP! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} and the Friendly Dragon`,
+                    pages: [
+                        { illustration: heroEmojiStr + ' ' + placeEmoji, text: `Once upon a time, in a ${placeName}, there lived ${heroes.length === 1 ? `a brave girl named ${leader}` : `${heroes.length} brave friends: ${formatHeroes(heroes)}`}.` },
+                        { illustration: '👀 🐉', text: `One magical day, ${leader} discovered a baby dragon hiding behind the ${place.includes('Castle') ? 'throne' : place.includes('Forest') ? 'oldest tree' : 'biggest rock'}!` },
+                        { illustration: '🐉 🌈 ✨', text: `"Don't be scared," ${leader} said softly. The little dragon's scales sparkled like rainbows!` },
+                        { illustration: '🫐 🎵 🍃', text: supporting.length > 0 ? `${supporting[0]} brought it berries. ${supporting[1] ? `${supporting[1]} sang it a song.` : 'They all helped!'} The dragon felt so loved!` : `${leader} fed it berries and sang gentle songs. The dragon purred happily!` },
+                        { illustration: '🐉 💝 ' + heroEmojiStr, text: `The dragon was so happy! It gave ${heroes.length === 1 ? leader : 'each of them'} a magic gift: the power to always find their way home.` },
+                        { illustration: '🐉 ' + heroEmojiStr + ' 💕', text: `And from that day on, ${formatHeroes(heroes)} and their dragon friend had the most amazing adventures together. The End!` }
+                    ]
+                }),
+                'Space': () => silly ? ({
+                    title: `Captain ${leader}'s WACKY Space Adventure! 🤪`,
+                    pages: [
+                        { illustration: '🚀 💨 😂', text: `3... 2... 1... BLAST— OOPS! The rocket went SIDEWAYS! "Wrong button!" giggled ${leader}!` },
+                        { illustration: '🚀 🌭 ⭐', text: `They crash-landed on a planet made entirely of HOT DOGS! Everything was hot dogs!` },
+                        { illustration: '🌭 👽 🌭', text: `The aliens there had mustard for hair! "Welcome to Planet Weenie!" they said!` },
+                        { illustration: '🌭 😋 ' + heroEmojiStr, text: `${formatHeroes(heroes)} got SO hungry they accidentally ate the king's throne! "MY CHAIR!" he squeaked!` },
+                        { illustration: '👑 🌭 😂', text: `To make it up to him, they built him an even BIGGER hot dog throne with extra relish!` },
+                        { illustration: '🚀 🌭 ' + heroEmojiStr + ' 🎉', text: `The aliens were so happy they gave everyone hot dog jet packs! ZOOM! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `Captain ${leader}'s Space Adventure`,
+                    pages: [
+                        { illustration: '🚀 3️⃣ 2️⃣ 1️⃣', text: `3... 2... 1... BLAST OFF!` },
+                        { illustration: heroEmojiStr + ' 🚀 ⭐', text: `Captain ${leader}${supporting.length > 0 ? ` and ${formatHeroes(supporting)}` : ''} zoomed through the stars in their sparkly spaceship!` },
+                        { illustration: placeEmoji + ' 👽 👽', text: `They found a ${placeName} floating in space! Friendly aliens lived there, but they had a problem...` },
+                        { illustration: '🌈 ⚙️ 😢', text: `Their rainbow machine was broken! No more colors in the galaxy!` },
+                        { illustration: '✨ 🔧 ' + heroEmojiStr, text: `${leader} had an idea! Together they fixed the rainbow machine with glitter and magic tape!` },
+                        { illustration: '🌈 🎉 👽 ' + heroEmojiStr, text: `Colors exploded across the galaxy! The aliens made them honorary Space Princesses! The End!` }
+                    ]
+                }),
+                'Soccer': () => silly ? ({
+                    title: `The BONKERS Championship Game! 🤪`,
+                    pages: [
+                        { illustration: '⚽ 🦆 😳', text: `It was the big game, but wait — someone replaced the soccer ball with a RUBBER DUCK!` },
+                        { illustration: '🦆 💨 😂', text: `Every time ${leader} kicked it, it went "SQUEAK SQUEAK SQUEAK!" Everyone burst out laughing!` },
+                        { illustration: '🦆 🐔 🐷', text: `Then MORE animals appeared! Chickens! Pigs! A confused llama! The field was CHAOS!` },
+                        { illustration: heroEmojiStr + ' 🦙 ⚽', text: `${leader} had an idea: "Let the llama be goalie!" The llama was AMAZING at blocking!` },
+                        { illustration: '🦆 💥 🥅', text: `${leader} kicked the duck... it squeaked through the air... and SCORED! "SQUEAK-GOOOAL!"` },
+                        { illustration: '🏆 🦆 ' + heroEmojiStr + ' 🎉', text: `They won the first-ever Squeaky Duck Championship! The llama got MVP! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `The Championship Game`,
+                    pages: [
+                        { illustration: '⚽ 🏆 😬', text: `It was the biggest soccer game of the year! ${heroes.length === 1 ? `${leader}'s team` : `${formatHeroes(heroes)}'s team`} was down by one goal!` },
+                        { illustration: heroEmojiStr + ' 💪', text: `"${heroes.length === 1 ? 'I' : 'We'} can do this!" ${leader} said. ${heroes.length > 1 ? '"Together!"' : ''}` },
+                        { illustration: '⚽ 💨 🦶', text: `The whistle blew! ${leader} got the ball and dodged one defender... then another...` },
+                        { illustration: '😶 ⚽ 🥅', text: `The crowd went quiet. ${leader} took a deep breath...` },
+                        { illustration: '⚽ 💥 🥅', text: `KICK! The ball flew through the air...` },
+                        { illustration: '🎉 🏆 ' + heroEmojiStr, text: `GOOOOOAL! They won! ${heroes.length > 1 ? 'They jumped and hugged!' : `${leader} pumped her fist!`} Champions! The End!` }
+                    ]
+                }),
+                'Magic': () => silly ? ({
+                    title: `${leader}'s OOPSIE Magic Spell! 🤪`,
+                    pages: [
+                        { illustration: '🪄 ✨ 😬', text: `${leader} was practicing magic, but said the spell wrong: "ABRA-CA-BANANA!"` },
+                        { illustration: '🍌 🍌 🍌 😱', text: `POOF! Everything turned into BANANAS! The chairs! The tables! Even ${supporting[0] || 'the cat'}!` },
+                        { illustration: '🍌 👀 😂', text: `"Help! I'm a banana!" squeaked ${supporting[0] || 'the banana-cat'}. ${leader} laughed so hard she snorted!` },
+                        { illustration: '🐵 🍌 🎉', text: `Then monkeys appeared! They thought it was a PARTY! They started juggling the banana-furniture!` },
+                        { illustration: '🪄 🌈 ✨', text: `${leader} finally got it right: "ABRA-CA-DABRA!" POOF! Everything went back to normal... mostly.` },
+                        { illustration: heroEmojiStr + ' 🐵 🍌', text: `${supporting[0] || 'The cat'} was still a LITTLE bit yellow. And one monkey refused to leave. The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: heroes.length === 1 ? `${leader} the Magnificent` : `The Magnificent ${formatHeroes(heroes)}`,
+                    pages: [
+                        { illustration: '🪄 ✨ ' + heroEmojiStr, text: `In the magical ${placeName}, ${heroes.length === 1 ? `a young witch named ${leader} was` : `${heroes.length} young witches were`} learning spells!` },
+                        { illustration: '🌸 ✨ 🪄', text: `${leader} waved her wand and made flowers bloom!${supporting.length > 0 ? ` ${supporting[0]} made things float in the air!` : ''}` },
+                        { illustration: '☁️ 😢 🌧️', text: `But one day, a grumpy cloud covered everything in shadows. Everyone was sad!` },
+                        { illustration: '💡 ' + heroEmojiStr, text: `"I have an idea!" said ${leader}. ${heroes.length > 1 ? '"If we combine our magic..."' : '"I can fix this!"'}` },
+                        { illustration: '🌸 ✨ 🦋 ⬆️', text: `${heroes.length > 1 ? 'They held hands and focused together.' : `${leader} focused really hard.`} Flowers and sparkles floated up!` },
+                        { illustration: '🌈 😊 ☀️', text: `The grumpy cloud started giggling, then laughing! It turned into a happy rainbow! The End!` }
+                    ]
+                }),
+                'Mermaids': () => silly ? ({
+                    title: `The SPLASHY Mermaid Disaster! 🤪`,
+                    pages: [
+                        { illustration: '🧜‍♀️ 🦈 😱', text: `${formatHeroes(heroes)} were swimming when a shark appeared! But this shark was... TINY. And wearing glasses.` },
+                        { illustration: '🦈 📚 🤓', text: `"Excuse me," said the tiny shark, "I'm lost. I was looking for the library." He was a NERD SHARK!` },
+                        { illustration: '🧜‍♀️ 🦈 📖', text: `${leader} helped him find the underwater library. He was so happy he did a little wiggly dance!` },
+                        { illustration: '🐙 📚 🎉', text: `At the library, an octopus was the librarian! She could stamp 8 books at once! "SHHHH!" she whispered loudly.` },
+                        { illustration: '📚 🧜‍♀️ 💨', text: `The nerd shark checked out SO many books he couldn't swim straight! He kept bonking into things!` },
+                        { illustration: '🦈 📚 ' + heroEmojiStr + ' 😂', text: `Now ${formatHeroes(heroes)} have a new friend who tells them fun facts ALL day! "Did you know octopi have three hearts?" The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} the Mermaid${heroes.length > 1 ? 's' : ''}`,
+                    pages: [
+                        { illustration: '🧜‍♀️ 🌊 ' + placeEmoji, text: `Deep under the waves, ${heroes.length === 1 ? `a mermaid named ${leader} swam` : `${heroes.length} mermaid friends swam`} through sparkly water!` },
+                        { illustration: '🧜‍♀️ 💜 💙 💖', text: `${heroes.map((h, i) => `${h} had a beautiful ${['purple', 'blue', 'pink', 'gold', 'teal', 'coral'][i]} tail`).join('! ')}!` },
+                        { illustration: '📦 💎 ✨', text: `They found a treasure chest stuck under a rock! Inside was a magical pearl!` },
+                        { illustration: '✨ 🤔 💭', text: `The pearl could grant ONE wish! "What should ${heroes.length === 1 ? 'I' : 'we'} wish for?" ${supporting.length > 0 ? `asked ${supporting[0]}` : `wondered ${leader}`}.` },
+                        { illustration: '🎢 🐚 🐠', text: `${leader} said, "Let's wish for something everyone can enjoy!" They wished for an underwater playground!` },
+                        { illustration: '🧜‍♀️ 🎉 🐠 🐙', text: `Seashell swings and coral slides appeared! Fish came from everywhere to play! The End!` }
+                    ]
+                }),
+                'Unicorns': () => silly ? ({
+                    title: `The Unicorn Who Couldn't Stop TOOTING! 🤪`,
+                    pages: [
+                        { illustration: '🦄 💨 🌈', text: `${formatHeroes(heroes)} found a unicorn, but every time it walked, it made a TOOT sound! And sparkles came out!` },
+                        { illustration: '💨 ✨ 😂', text: `TOOT! Sparkles everywhere! TOOT TOOT! The unicorn was SO embarrassed! "I can't help it!"` },
+                        { illustration: '🦄 😳 🌈', text: `${leader} said, "Don't be embarrassed! Your toots are MAGICAL!" The sparkles made flowers grow!` },
+                        { illustration: '🌸 💨 🎉', text: `They had an idea: "Let's plant a garden!" The unicorn tooted all around the ${placeName}!` },
+                        { illustration: '🌷 🌻 🌹 ✨', text: `TOOT TOOT TOOT! Soon there were flowers EVERYWHERE! The most beautiful garden in the world!` },
+                        { illustration: '🦄 ' + heroEmojiStr + ' 🌸 💕', text: `Now the unicorn is PROUD of its magical toots! They call it the "Sparkle Fluffer!" The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} and the Secret Unicorn`,
+                    pages: [
+                        { illustration: '✨ 🛤️ ' + placeEmoji, text: `In the sparkly ${placeName}, ${leader} found a secret path covered in glitter!` },
+                        { illustration: heroEmojiStr + ' 👀 ✨', text: supporting.length > 0 ? `"Come look!" ${leader} called to ${formatHeroes(supporting)}.` : `Her heart raced with excitement!` },
+                        { illustration: '🦄 😢 💔', text: `They found a baby unicorn with a hurt wing! Its horn flickered sadly.` },
+                        { illustration: '🩹 🎵 🫐', text: heroes.length > 1 ? `Everyone helped! ${supporting[0]} brought bandages.${supporting[1] ? ` ${supporting[1]} sang a healing song.` : ''}` : `${leader} bandaged its wing and sang a gentle song.` },
+                        { illustration: heroEmojiStr + ' 🦄 💤', text: `${leader} stayed up all night, keeping the unicorn company.` },
+                        { illustration: '🦄 ✨ ' + heroEmojiStr + ' 💕', text: `By morning, the unicorn was healed! It touched ${heroes.length === 1 ? 'her' : 'their'} forehead${heroes.length > 1 ? 's' : ''} with its horn — the gift of spreading kindness forever! The End!` }
+                    ]
+                }),
+                'Princess': () => silly ? ({
+                    title: `The Princess PAJAMA Parade! 🤪`,
+                    pages: [
+                        { illustration: '👑 🛏️ 😴', text: `Princess ${leader} overslept! The royal parade was starting and she was still in PAJAMAS!` },
+                        { illustration: '🩷 🐰 😱', text: `Her PJs had little bunnies on them! "I can't let anyone see!" But she had no time to change!` },
+                        { illustration: '👑 🩷 😬', text: `${leader} put on her crown and ran out in bunny pajamas. Everyone stared...` },
+                        { illustration: '😂 🐰 👑', text: `Then someone shouted, "CUTEST PRINCESS EVER!" Everyone wanted bunny PJs too!` },
+                        { illustration: '🩷 🩷 🩷 🎉', text: `Soon the WHOLE kingdom was wearing pajamas! Knights in ducky PJs! Dragons in onesies!` },
+                        { illustration: '👑 🛏️ ' + heroEmojiStr + ' 💕', text: `${leader} declared every Friday "Pajama Day!" Best rule ever! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: heroes.length === 1 ? `Princess ${leader}` : `The ${heroes.length} Princess${heroes.length > 1 ? 'es' : ''}`,
+                    pages: [
+                        { illustration: '👑 ' + heroEmojiStr + ' 🏰', text: `In the grand ${placeName}, ${heroes.length === 1 ? `Princess ${leader} ruled` : `${heroes.length} princesses ruled together`} with kindness!` },
+                        { illustration: '🎉 🐕 🍪', text: heroes.length === 1 ? `${leader} had many jobs: planning parties, caring for pets, and making everyone happy!` : `Each princess had a special job. ${leader} made sure everyone was happy.${supporting[0] ? ` ${supporting[0]} planned the parties!` : ''}` },
+                        { illustration: '🤔 👑 ❓', text: `One day, a visitor asked, "Who is the REAL queen?"` },
+                        { illustration: heroEmojiStr + ' 😊', text: `${heroes.length > 1 ? 'They looked at each other and smiled!' : `${leader} smiled!`}` },
+                        { illustration: '👑 💪 ❤️', text: `${leader} said, "${heroes.length === 1 ? 'I am! And I rule with love!' : 'We ALL are! We rule together!'}"` },
+                        { illustration: '🏰 🎉 ' + heroEmojiStr + ' 💕', text: `Word spread about the kindest kingdom ever — all because ${heroes.length === 1 ? `${leader} led with love` : 'working together makes the best team'}! The End!` }
+                    ]
+                }),
+                'Superheroes': () => silly ? ({
+                    title: `The Superheroes Who Lost Their PANTS! 🤪`,
+                    pages: [
+                        { illustration: '🦸‍♀️ 👖 ❓', text: `Super ${leader} was ready to save the day, but WAIT — where were the superhero pants?!` },
+                        { illustration: '🐿️ 👖 😈', text: `A sneaky squirrel had stolen ALL the superhero pants! "You'll never catch me!" it squeaked!` },
+                        { illustration: '🦸‍♀️ 🩲 😱', text: `${formatHeroes(heroes)} had to chase the squirrel in their UNDIES! Polka dots and stripes everywhere!` },
+                        { illustration: '🐿️ 💨 ' + heroEmojiStr, text: `The squirrel was FAST! It ran through the park, the mall, and a birthday party!` },
+                        { illustration: '🎂 😂 🩲', text: `Everyone at the party cheered! "BEST BIRTHDAY EVER!" They thought it was entertainment!` },
+                        { illustration: '👖 🦸‍♀️ ' + heroEmojiStr + ' 🐿️', text: `They finally caught the squirrel! Turns out it just wanted a superhero cape. Now it's their sidekick! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: heroes.length === 1 ? `Super ${leader}!` : `The Super ${heroes.length === 2 ? 'Duo' : 'Team'}!`,
+                    pages: [
+                        { illustration: heroEmojiStr + ' 🦸‍♀️', text: `By day, ${heroes.length === 1 ? 'she was a regular girl' : 'they were regular friends'}. But when trouble came...` },
+                        { illustration: '💥 🦸‍♀️ ⚡', text: `They became ${heroes.length === 1 ? `SUPER ${leader.toUpperCase()}` : 'THE SUPER TEAM'}! ${heroes.map((h, i) => `${h} ${['could fly', 'had super strength', 'could turn invisible', 'could run like lightning', 'had ice powers', 'could talk to animals'][i % 6]}`).join('! ')}!` },
+                        { illustration: '🐕 🐕 🐕 😰', text: `One day, all the puppies in town got lost in a giant maze!` },
+                        { illustration: heroEmojiStr + ' 💪', text: `"${heroes.length > 1 ? 'Super Team, UNITE!' : "I'll save them!"}" called ${leader}!` },
+                        { illustration: '🦸‍♀️ 🐕 ✨', text: heroes.length === 1 ? `${leader} flew above the maze and saved every puppy one by one!` : `They worked together — flying, running, clearing paths — and saved every single puppy!` },
+                        { illustration: '🐕 🎉 ' + heroEmojiStr + ' 🦸‍♀️', text: `The town cheered! ${heroes.length > 1 ? 'They knew the real superpower was teamwork!' : `${leader} knew the real superpower was believing in yourself!`} The End!` }
+                    ]
+                }),
+                'Dinosaurs': () => silly ? ({
+                    title: `The T-Rex Who Was Scared of PICKLES! 🤪`,
+                    pages: [
+                        { illustration: '🦖 😰 🥒', text: `${formatHeroes(heroes)} met a T-Rex in the ${placeName}. But this T-Rex was TERRIFIED of pickles!` },
+                        { illustration: '🥒 🦖 😱', text: `"AAAAH! Is that a PICKLE?!" The giant dino hid behind ${leader}! "Protect me!"` },
+                        { illustration: '🥒 👀 😂', text: `${leader} giggled. "It's just a little pickle! It can't hurt you!" The T-Rex peeked out nervously.` },
+                        { illustration: '🦖 🥒 🤝', text: `${leader} had an idea! "Let's make the pickle your FRIEND!" She drew a smiley face on it!` },
+                        { illustration: '🥒 😊 🦖', text: `The T-Rex looked at the smiley pickle. Then it laughed! "It IS kinda cute!"` },
+                        { illustration: '🦖 🥒 ' + heroEmojiStr + ' 🎉', text: `Now the T-Rex carries a pickle everywhere for good luck! They call him "Picklesaurus Rex!" The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} and the Baby Dinosaur`,
+                    pages: [
+                        { illustration: heroEmojiStr + ' 🦖 ' + placeEmoji, text: `${formatHeroes(heroes)} were exploring the ${placeName} when they heard a little SQUEAK!` },
+                        { illustration: '🥚 🦕 👀', text: `It was a baby dinosaur hatching from an egg! It looked up at ${leader} and chirped happily!` },
+                        { illustration: '🦕 💕 ' + heroEmojiStr, text: `The baby dino thought ${leader} was its mama! It followed ${heroes.length > 1 ? 'them' : 'her'} everywhere!` },
+                        { illustration: '🦕 📚 🎓', text: `They taught the dino tricks: sit, roll over, and even HIGH FIVE with its tiny arms!` },
+                        { illustration: '🦕 🦖 ❤️', text: `Soon the baby's real dino family found them! But the baby didn't want to leave its new friends!` },
+                        { illustration: '🦕 ' + heroEmojiStr + ' 🌟', text: `The dino family invited ${formatHeroes(heroes)} to visit anytime! Now they have dinosaur friends forever! The End!` }
+                    ]
+                }),
+                'Fairies': () => silly ? ({
+                    title: `The Fairy Who Sneezed GLITTER! 🤪`,
+                    pages: [
+                        { illustration: '🧚 🤧 ✨', text: `${formatHeroes(heroes)} met a fairy who had a cold. But when she sneezed... ACHOO! GLITTER EVERYWHERE!` },
+                        { illustration: '✨ ✨ 😱', text: `Glitter in their hair! Glitter in their ears! The fairy couldn't stop sneezing!` },
+                        { illustration: '🤧 ✨ 🏠', text: `ACHOO! The house was covered! ACHOO! The trees were sparkly! ACHOO ACHOO ACHOO!` },
+                        { illustration: '🧚 🍵 😷', text: `${leader} made the fairy some soup! "This should help!" The fairy sipped it carefully...` },
+                        { illustration: '🧚 😮 💨', text: `The fairy felt a sneeze coming... "Ah... ah... AH..." Everyone ducked!` },
+                        { illustration: '🧚 😌 ✨', text: `"...ahhh. I feel better!" NO SNEEZE! But now the whole ${placeName} is permanently sparkly! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} in Fairyland`,
+                    pages: [
+                        { illustration: '🧚 ✨ ' + placeEmoji, text: `${formatHeroes(heroes)} found a tiny door in the ${placeName}. When they touched it, they shrunk to fairy size!` },
+                        { illustration: '🧚 🌸 ' + heroEmojiStr, text: `A friendly fairy named Twinkle welcomed them! "Come see our fairy village!"` },
+                        { illustration: '🍄 🏠 ✨', text: `The houses were made of mushrooms! The streets were flower petals! Everything was magical!` },
+                        { illustration: '🧚 😢 🌺', text: `But the fairies were sad — their magic flower had wilted! Without it, they couldn't fly!` },
+                        { illustration: '💧 🌸 ' + heroEmojiStr, text: `${leader} sang a gentle song while ${supporting[0] || 'the fairies'} brought water. The flower started to glow!` },
+                        { illustration: '🧚 ✨ ' + heroEmojiStr + ' 🌈', text: `The flower bloomed! The fairies could fly again! They made ${formatHeroes(heroes)} honorary fairies! The End!` }
+                    ]
+                }),
+                'Pirates': () => silly ? ({
+                    title: `The Pirates Who Found SILLY Treasure! 🤪`,
+                    pages: [
+                        { illustration: '🏴‍☠️ 🗺️ ' + heroEmojiStr, text: `Captain ${leader} found a treasure map! "X marks the spot! Let's find the GOLD!"` },
+                        { illustration: '⛵ 🌊 🦜', text: `They sailed to the ${placeName}. Their parrot kept saying "BOOTY BOOTY BOOTY!" (He meant treasure!)` },
+                        { illustration: '🏝️ 🕳️ ⛏️', text: `They dug and dug and dug! Finally, CLUNK! They hit something!` },
+                        { illustration: '📦 👀 😮', text: `They opened the chest expecting gold, but inside was... a rubber chicken?!` },
+                        { illustration: '🐔 📝 😂', text: `There was a note: "The real treasure is the SILLY along the way! Also, squeeze the chicken."` },
+                        { illustration: '🐔 🎵 ' + heroEmojiStr + ' 😂', text: `They squeezed it. It played a FUNNY SONG! Now it's their official ship mascot! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `Captain ${leader}'s Pirate Adventure`,
+                    pages: [
+                        { illustration: '🏴‍☠️ ⛵ ' + heroEmojiStr, text: `Ahoy! Captain ${leader}${supporting.length > 0 ? ` and first mate${supporting.length > 1 ? 's' : ''} ${formatHeroes(supporting)}` : ''} set sail for adventure!` },
+                        { illustration: '🗺️ ✨ 👀', text: `They found a mysterious map leading to the legendary Treasure of Kindness!` },
+                        { illustration: '🌊 🦈 😬', text: `The sea got rough! A friendly dolphin guided them through the stormy waves!` },
+                        { illustration: '🏝️ 🌴 ' + heroEmojiStr, text: `They reached the island! But the treasure was guarded by puzzles, not monsters!` },
+                        { illustration: '🧩 💡 ✨', text: `${leader} solved the riddles with kindness: sharing, helping, and saying "please" and "thank you!"` },
+                        { illustration: '📦 💎 ' + heroEmojiStr + ' 💕', text: `The treasure was friendship bracelets for everyone they'd meet! The best treasure of all! The End!` }
+                    ]
+                }),
+                'Puppy': () => silly ? ({
+                    title: `The Puppies Who Could TALK?! 🤪`,
+                    pages: [
+                        { illustration: '🐕 💬 😱', text: `${leader} was at the park when a puppy walked up and said, "Hey, got any snacks?"` },
+                        { illustration: '🐕 ' + heroEmojiStr + ' 😳', text: `"DID THAT DOG JUST TALK?!" ${leader} couldn't believe it!` },
+                        { illustration: '🐕 🐕 💬', text: `"Yeah, we all talk," said another puppy. "We just don't let adults hear us. They'd FREAK OUT!"` },
+                        { illustration: '🐕 🎤 🎵', text: `The puppies invited ${formatHeroes(heroes)} to their SECRET TALENT SHOW! One puppy did stand-up comedy!` },
+                        { illustration: '🐕 🎭 😂', text: `"Why did the puppy cross the road? To get to the BARKING lot!" Everyone howled with laughter!` },
+                        { illustration: '🐕 ' + heroEmojiStr + ' 🤫', text: `Now ${formatHeroes(heroes)} know the secret! But shhhh — don't tell the grown-ups! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} and the Puppy Rescue`,
+                    pages: [
+                        { illustration: '🐕 😢 ' + placeEmoji, text: `${formatHeroes(heroes)} heard tiny whimpers in the ${placeName}. A basket of puppies needed help!` },
+                        { illustration: '🐕 🐕 🐕 👀', text: `Five little puppies looked up with big eyes! They were lost and scared!` },
+                        { illustration: heroEmojiStr + ' 🐕 🍼', text: `${leader} wrapped them in a cozy blanket while ${supporting[0] || 'others'} got them water and food.` },
+                        { illustration: '🐕 🛁 ✨', text: `They gave each puppy a warm bath and named them: Biscuit, Waffles, Cupcake, Muffin, and Sprinkles!` },
+                        { illustration: '📱 ❤️ 🏠', text: `They made "Found Puppies" posters and found loving families for each one!` },
+                        { illustration: '🐕 ' + heroEmojiStr + ' 💕', text: `Every puppy found a forever home! And they all visit ${formatHeroes(heroes)} for playdates! The End!` }
+                    ]
+                }),
+                'Circus': () => silly ? ({
+                    title: `The Circus Where EVERYTHING Went Wrong! 🤪`,
+                    pages: [
+                        { illustration: '🎪 🤹 ' + heroEmojiStr, text: `${formatHeroes(heroes)} went to the circus, but the performers were all SICK! "The show must go on!"` },
+                        { illustration: '🎪 😰 ❓', text: `"Can YOU do the show?" asked the ringmaster. ${leader} gulped. "Uhhhh... sure?"` },
+                        { illustration: '🤹 🍕 😂', text: `${leader} tried juggling, but accidentally grabbed pizzas instead of balls! SPLAT SPLAT SPLAT!` },
+                        { illustration: '🦁 😴 💤', text: `The lion was supposed to roar, but it just yawned and fell asleep! Everyone went "Awwww!"` },
+                        { illustration: '🤡 🎈 💥', text: `The balloon animals kept POPPING! POP POP POP! The clown cried real tears (of laughter)!` },
+                        { illustration: '🎪 ' + heroEmojiStr + ' 🎉', text: `It was the WORST circus ever... which made it the BEST! Everyone laughed so hard! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} Join the Circus`,
+                    pages: [
+                        { illustration: '🎪 ✨ ' + heroEmojiStr, text: `A magical circus came to the ${placeName}! ${formatHeroes(heroes)} got front row seats!` },
+                        { illustration: '🎪 🌟 👀', text: `The ringmaster spotted them! "You have the sparkle of performers! Want to join the show?"` },
+                        { illustration: '🤸 🎀 ' + heroEmojiStr, text: `${leader} learned to do flips on the trampoline! ${supporting[0] ? `${supporting[0]} became a tightrope walker!` : 'So amazing!'}` },
+                        { illustration: '🐘 🎪 ✨', text: `They even got to ride the gentle circus elephant! It wore a sparkly hat!` },
+                        { illustration: '🎭 👏 🌟', text: `The big show began! ${formatHeroes(heroes)} performed for the whole town! Everyone cheered!` },
+                        { illustration: '🎪 ' + heroEmojiStr + ' ⭐', text: `The circus gave them sparkly costumes to keep! "You'll always be part of our family!" The End!` }
+                    ]
+                }),
+                'Candy': () => silly ? ({
+                    title: `The Candy That Ate BACK! 🤪`,
+                    pages: [
+                        { illustration: '🍭 👀 ' + heroEmojiStr, text: `${formatHeroes(heroes)} found Candy Land! But this candy was ALIVE! And it was HUNGRY!` },
+                        { illustration: '🍬 😈 🏃', text: `"I'M GONNA EAT YOU!" shouted a giant gummy bear! ${leader} screamed and ran!` },
+                        { illustration: '🍫 🍭 💨', text: `Chocolate bars chased them! Lollipops lunged! "RUN AWAYYY!"` },
+                        { illustration: '🍪 💡 😮', text: `Then ${leader} stopped. "Wait. We're BIGGER than you!" The candy froze.` },
+                        { illustration: '🍬 😰 🤝', text: `"Please don't eat us!" squeaked the gummy bear. "We were just playing!" It started to cry jelly tears.` },
+                        { illustration: '🍭 ' + heroEmojiStr + ' 🎉', text: `They became friends! Now the candy gives them free treats, and they give the candy hugs! The Silly End! 🤪` }
+                    ]
+                }) : ({
+                    title: `${formatHeroes(heroes)} in Candy Land`,
+                    pages: [
+                        { illustration: '🍭 🌈 ' + heroEmojiStr, text: `${formatHeroes(heroes)} discovered a secret path to CANDY LAND! Everything was made of sweets!` },
+                        { illustration: '🍫 🏠 🍬', text: `Houses made of chocolate! Rivers of caramel! Trees with lollipop leaves!` },
+                        { illustration: '🧁 👑 ✨', text: `The Cupcake Queen welcomed them! "Our land needs your help! The Sugar Stars have gone out!"` },
+                        { illustration: '⭐ 😢 🍭', text: `Without Sugar Stars, the candy would lose its sweetness! ${leader} knew what to do.` },
+                        { illustration: '✨ 🎵 ⭐', text: `They sang the sweetest song about friendship and kindness! The stars began to GLOW!` },
+                        { illustration: '🍭 ' + heroEmojiStr + ' 🌟', text: `The Sugar Stars sparkled brighter than ever! The Queen gave them candy crowns to wear forever! The End!` }
+                    ]
+                })
+            };
+
+            const themeKey = Object.keys(stories).find(k => theme.includes(k));
+            return stories[themeKey]();
+        }
+    </script>
+</body>
+</html>
