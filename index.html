@@ -358,6 +358,19 @@
                     <div class="age">Age 5</div>
                 </div>
             </div>
+            <p style="opacity: 0.8; margin: 16px 0 12px; font-size: 0.9em;">Parents</p>
+            <div class="heroes">
+                <div class="hero" onclick="toggleHero(this)" data-hero="John">
+                    <div class="emoji">👨</div>
+                    <div class="name">Dad</div>
+                    <div class="age">John</div>
+                </div>
+                <div class="hero" onclick="toggleHero(this)" data-hero="Sarah">
+                    <div class="emoji">👩</div>
+                    <div class="name">Mom</div>
+                    <div class="age">Sarah</div>
+                </div>
+            </div>
             <p class="tip">Tap to select one or more heroes!</p>
         </div>
 
@@ -418,7 +431,7 @@
                 <button class="mode-btn active" onclick="setDogs(true)" id="dogsOn">🐕 Yes!</button>
                 <button class="mode-btn" onclick="setDogs(false)" id="dogsOff">❌ Not today</button>
             </div>
-            <p class="tip">Bear, Buddy, and Lola join the adventure!</p>
+            <p class="tip">🐕 Bear (Great Pyrenees), Buddy (Golden Retriever) & Lola (Dachshund) join the adventure!</p>
         </div>
 
         <button class="generate" onclick="generateStory()" id="generateBtn">
@@ -568,7 +581,9 @@
                 'Livi': '8-year-old girl with curly red hair',
                 'Sutton': '6-year-old girl with curly blonde hair',
                 'Abby': '8-year-old girl',
-                'Tennyson': '5-year-old girl'
+                'Tennyson': '5-year-old girl',
+                'John': 'tall dad with short dark hair and a warm friendly smile',
+                'Sarah': 'mom with long dark hair and a kind warm smile'
             };
             
             const heroDescriptions = selections.heroes.map(h => `${h} (${heroAges[h]})`).join(', ');
@@ -577,7 +592,7 @@
             
             let dogsText = '';
             if (selections.dogs) {
-                dogsText = ' The family dogs join them: Bear (a huge fluffy white Great Pyrenees), Buddy (a long-haired golden retriever), and tiny Lola (a black and brown dachshund).';
+                dogsText = ` The family dogs join them: Bear (a DOG — a huge fluffy white Great Pyrenees dog, NOT a bear or any other animal), Buddy (a DOG — a friendly golden retriever), and tiny Lola (a DOG — a 10-pound dachshund with mostly black fur and brown markings). CRITICAL: Bear, Buddy, and Lola are ALL DOGS. Bear is named Bear but is a dog. Always draw them as dogs in every scene.`;
             }
 
             const sillyNote = selections.silly 
@@ -608,7 +623,8 @@ IMPORTANT for imagePrompt:
 - Describe the children's appearance consistently (hair color, age)
 - Use "children's book illustration, warm colors, magical atmosphere" style
 - Describe specific actions and emotions
-- Include the setting details`;
+- Include the setting details
+- DOGS: Bear is a fluffy white Great Pyrenees DOG (not a bear), Buddy is a golden retriever DOG, Lola is a tiny black dachshund DOG — always illustrate them as dogs`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',
